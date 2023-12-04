@@ -1,100 +1,100 @@
-const canvas = document.getElementById('gameCanvas'); // seleciona o canvas no html
-const context = canvas.getContext('2d'); // configuração do contexto 2D
+/* Implementar (NÃO APAGAR!!!)
+Gerador de asteroides de tamanho variável
+Gerador de asteroides de velocidade variável, de acordo com a dificuldade
+Implementar o score
+Implementar o game over
+Conforme a dificuldade aumentar a velocidade dos asteroides aumenta e gera asteroides maiores
+Implementar a função para o jogo ficar mais difícil conforme o score/tempo aumenta
 
-// configuração do tamanho do canvas para o jogo rodar na tela inteira
+Se voces quiserem mais alguma coisa coloca ai em cima :)
+*/
+
+class Spaceship 
+{ // classe da nave
+    constructor(x, y, width, height, speed) { // construtor da nave
+        this.x = x; // posição x da nave
+        this.y = y; // posição y da nave
+        this.width = width; // largura da nave
+        this.height = height; // altura da nave
+        this.speed = speed; // velocidade da nave
+    }
+
+    moveLeft() { // move a nave para a esquerda
+        if (this.x > 0) {
+            this.x -= this.speed;
+        }
+    }
+
+    moveRight(canvasWidth) { // move a nave para a direita
+        if (this.x < canvasWidth - this.width) {
+            this.x += this.speed;
+        }
+    }
+
+    draw(context) { // desenha a nave (substituir depois jojo e vector!!!)
+        context.fillStyle = 'blue';
+        context.fillRect(this.x, this.y, this.width, this.height);
+    }
+}
+
+window.onload = () => {
+    const diff = urlParams.get('diff');
+}
+
+const canvas = document.getElementById('spaceGame');
+const context = canvas.getContext('2d');
+
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-let spaceship = { // editar depois utilizando a imagem da nave vector aé e jojo pintuda
-    x: canvas.width / 2,
-    y: canvas.height - 50,
-    width: 50,
-    height: 50,
-    speed: 5
-};
+const spaceship = new Spaceship(canvas.width / 2, canvas.height - 50, 50, 50, 10); // cria a nave
 
-let asteroids = []; // vetor de asteroides ()
+let asteroids = [];
 let score = 0;
 
-function drawSpaceship() { // editar depois utilizando a imagem da nave e remove a funcition
-    context.fillStyle = 'blue';
-    context.fillRect(spaceship.x, spaceship.y, spaceship.width, spaceship.height);
+function defineDifficulty(diff) // define a dificuldade do jogo
+{
+    if (diff === 'easy') {
+        spaceship.speed = 7;
+    } else if (diff === 'medium') {
+        spaceship.speed = 5;
+    } else if (diff === 'hard') {
+        spaceship.speed = 3;
+    }
 }
 
-function drawAsteroids() 
-{ // editar depois utilizando a imagem dos asteroides e remove a funcition
+function drawAsteroids() // desenha os asteroides (substituir depois jojo e vector!!!)
+{ 
     context.fillStyle = 'red';
     for (let asteroid of asteroids) {
         context.fillRect(asteroid.x, asteroid.y, asteroid.width, asteroid.height);
     }
 }
 
-/* gpt me mandou esse código, quando editarem me mandem msg no zap
-const spaceshipImage = new Image();
-spaceshipImage.src = 'caminho/para/sua/imagem-da-nave.png';
-
-const asteroidImage = new Image();
-asteroidImage.src = 'caminho/para/sua/imagem-do-asteroide.png';
-
-function drawSpaceship() {
-  ctx.drawImage(spaceshipImage, spaceship.x, spaceship.y, spaceship.width, spaceship.height);
-}
-
-function drawAsteroids() {
-  for (let asteroid of asteroids) {
-    ctx.drawImage(asteroidImage, asteroid.x, asteroid.y, asteroid.width, asteroid.height);
-  }
-}
-
-let imagesLoaded = 0;
-
-spaceshipImage.onload = imageLoaded;
-asteroidImage.onload = imageLoaded;
-
-function imageLoaded() {
-  imagesLoaded++;
-
-  if (imagesLoaded === 2) {
-    // Inicie o jogo somente quando ambas as imagens estiverem carregadas
-    updateGame();
-  }
-}
-
-*/
-
 function updateGame() 
 {
     context.clearRect(0, 0, canvas.width, canvas.height);
 
-    drawSpaceship();
+    spaceship.draw(context);
     drawAsteroids();
 
-    // manda os asteroides para baixo
     for (let asteroid of asteroids) {
-        asteroid.y += 2;
+        asteroid.y += 5;
 
-        // verifica a colisão entre o asteroide e a nave
-        if (spaceship.x < asteroid.x + asteroid.width &&
-        spaceship.x + spaceship.width > asteroid.x &&
-        spaceship.y < asteroid.y + asteroid.height &&
-        spaceship.y + spaceship.height > asteroid.y) 
-        {
+        if (checkCollision(spaceship, asteroid)) {
             alert('Game Over! Your score: ' + score);
             resetGame();
         }
     }
 
-    // Remove asteroids that are out of the canvas
     asteroids = asteroids.filter(asteroid => asteroid.y <= canvas.height);
 
-    // gera novos asteroides aleatoriamente
-    if (Math.random() < 0.02) 
-    {
+    if (Math.random() < 0.15) {
         let asteroid = {
-        x: Math.random() * (canvas.width - 30),
-        y: -30,
-        width: 30,
-        height: 30
+            x: Math.random() * (canvas.width - 30),
+            y: -30,
+            width: 30,
+            height: 30
         };
         asteroids.push(asteroid);
     }
@@ -102,20 +102,28 @@ function updateGame()
     requestAnimationFrame(updateGame);
 }
 
-// event listener para o movimento da nave
-window.addEventListener('keydown', function (pressed) {
-    if (pressed.key === 'ArrowLeft' && spaceship.x > 0) {
-        spaceship.x -= spaceship.speed;
-    } else if (pressed.key === 'ArrowRight' && spaceship.x < canvas.width - spaceship.width) {
-        spaceship.x += spaceship.speed;
+window.addEventListener('keydown', (pressed) => { // função para mover a nave
+    if (pressed.key === 'ArrowLeft') {
+        spaceship.moveLeft(); 
+    } else if (pressed.key === 'ArrowRight') {
+        spaceship.moveRight(canvas.width);
     }
 });
 
-function resetGame() { // resetar o jogo
+function checkCollision(spaceship, asteroids) { // verifica a colisão entre a nave e os asteroides
+    return (
+        spaceship.x < asteroids.x + asteroids.width &&
+        spaceship.x + spaceship.width > asteroids.x &&
+        spaceship.y < asteroids.y + asteroids.height &&
+        spaceship.y + spaceship.height > asteroids.y
+    );
+}
+
+function resetGame() 
+{
     spaceship.x = canvas.width / 2;
     spaceship.y = canvas.height - 50;
     asteroids = [];
-    score = 0;
 }
 
 updateGame();
