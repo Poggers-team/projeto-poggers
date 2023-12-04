@@ -6,6 +6,11 @@ Implementar o game over
 Conforme a dificuldade aumentar a velocidade dos asteroides aumenta e gera asteroides maiores
 Implementar a função para o jogo ficar mais difícil conforme o score/tempo aumenta
 
+(quanto maior o número, mais dificil o jogo fica)
+inicio facil = 0.15
+inicio medio = 0.25
+inicio dificil = 0.35
+
 Se voces quiserem mais alguma coisa coloca ai em cima :)
 */
 
@@ -89,7 +94,7 @@ function updateGame()
 
     asteroids = asteroids.filter(asteroid => asteroid.y <= canvas.height);
 
-    if (Math.random() < 0.15) {
+    if (Math.random() < 0.35) { // velocidade de geração dos asteroides
         let asteroid = {
             x: Math.random() * (canvas.width - 30),
             y: -30,
