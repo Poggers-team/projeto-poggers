@@ -1,26 +1,28 @@
 /* Implementar (NÃO APAGAR!!!)
-Gerador de asteroides de tamanho variável
-Gerador de asteroides de velocidade variável, de acordo com a dificuldade
-Implementar o game over
 Conforme a dificuldade aumentar a velocidade dos asteroides aumenta e gera asteroides maiores
 Implementar a função para o jogo ficar mais difícil conforme o score/tempo aumenta
 
-(quanto maior o número, mais dificil o jogo fica)
-inicio facil = 0.15
-inicio medio = 0.25
-inicio dificil = 0.35
+-- arrumar --
+bug hitbox da nave
+bug hitbox dos asteroides
+bug velocidade dos asteroides
+dificuldade do jogo
 
 -- feito --
+Implementar o game over
 Implementar o score
+Gerador de asteroides de tamanho variável
+Gerador de asteroides de velocidade variável, de acordo com a dificuldade
 
 Se voces quiserem mais alguma coisa coloca ai em cima :)
 */
 
 // importa os objetos do jogo
-import { Spaceship } from './Spaceship.js';
-import { Asteroid } from './Asteroid.js';
+import { Spaceship } from './model/Spaceship.js';
+import { Asteroid } from './model/Asteroid.js';
 
 window.onload = () => {
+    const urlParams = new URLSearchParams(window.location.search);
     const diff = urlParams.get('diff');
     defineDifficulty(diff);
 }
@@ -32,20 +34,23 @@ const context = canvas.getContext('2d'); // define o contexto do canvas como 2d
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-const spaceship = new Spaceship(canvas.width / 2, canvas.height - 50, 50, 50, 10); 
+const spaceship = new Spaceship(canvas.width / 2, canvas.height - 50, 50, 50, 10);  // cria a nave
 
-let asteroids = [];
+let asteroids = []; // fila de asteroides
+let asteroidGenSpeed; // velocidade de geração de asteroides
 let score = 0; // pontuação do jogo de acordo com a quantidade de asteroides desviados
 
 function defineDifficulty(diff) 
 {
     if (diff === 'easy') {
-        spaceship.speed = 10;
+        asteroidGenSpeed = 0.15; // velocidade inicial fácil
     } else if (diff === 'medium') {
-        spaceship.speed = 7;
+        asteroidGenSpeed = 0.25; // velocidade inicial média
     } else if (diff === 'hard') {
-        spaceship.speed = 5;
+        asteroidGenSpeed = 0.35; // velocidade inicial difícil
     }
+
+    updateGame(diff); // inicia o jogo
 }
 
 function drawAsteroids() 
@@ -55,18 +60,25 @@ function drawAsteroids()
     }
 }
 
-function updateGame() 
+function writeScore() {
+    context.font = "20px Arial";
+    context.fillStyle = "white";
+    context.fillText("Score: " + score, 10, 30);
+}
+
+function updateGame(diff) 
 {
     context.clearRect(0, 0, canvas.width, canvas.height);
 
     spaceship.draw(context);
     drawAsteroids();
+    writeScore(); // escreve a pontuação na tela
 
     for (let asteroid of asteroids) {
         asteroid.update();
 
         if (checkCollision(spaceship, asteroid)) {
-            alert('Game Over! Your score: ' + score);
+            alert('Game Over! Sua pontuação: ' + score);
             resetGame();
         }
     }
@@ -80,20 +92,22 @@ function updateGame()
         }
     });
 
-    if (Math.random() < 0.15) {
+    if (Math.random() < asteroidGenSpeed) {
         let size = Math.floor(Math.random() * 50) + 10; // gera um tamanho aleatório entre 10 e 60
         let speed = 7; // velocidade padrão
 
         // aumenta a velocidade dos asteroides de acordo com a dificuldade
-        if (spaceship.speed === 7) { // dificuldade média
+        if (diff == 'normal') { // dificuldade média
             speed = 10;
-        } else if (spaceship.speed === 5) { // dificuldade difícil
+        } else if (diff == 'hard') { // dificuldade difícil
             speed = 12;
         }
 
         let asteroid = new Asteroid(Math.random() * (canvas.width - size), -size, size, size, speed);
         asteroids.push(asteroid); 
     }
+
+    asteroidGenSpeed += 0.001; // aumenta a velocidade dos asteroides ao longo do tempo
 
     requestAnimationFrame(updateGame);
 }
@@ -107,12 +121,12 @@ window.addEventListener('keydown', (pressed) => {
     }
 });
 
-function checkCollision(spaceship, asteroids) { //boolean
+function checkCollision(spaceship, asteroid) { //boolean
     return ( // verifica se houve colisão entre nave e asteroide
-        spaceship.x < asteroids.x + asteroids.width &&
-        spaceship.x + spaceship.width > asteroids.x &&
-        spaceship.y < asteroids.y + asteroids.height &&
-        spaceship.y + spaceship.height > asteroids.y
+        spaceship.x < asteroid.x + asteroid.width &&
+        spaceship.x + spaceship.width > asteroid.x &&
+        spaceship.y < asteroid.y + asteroid.height &&
+        spaceship.y + spaceship.height > asteroid.y
     );
 }
 
@@ -124,6 +138,7 @@ function resetGame()
 
     /* ----- limpa o vetor de asteroides ----- */
     asteroids = [];
-}
 
-updateGame();
+    /* ----- reseta a pontuação ----- */
+    score = 0;
+}
