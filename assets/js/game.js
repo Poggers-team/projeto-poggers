@@ -22,10 +22,10 @@ import { Spaceship } from './model/Spaceship.js';
 import { Asteroid } from './model/Asteroid.js';
 
 window.onload = () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const diff = urlParams.get('diff');
-    defineDifficulty(diff);
-}
+    const urlParams = new URLSearchParams(window.location.search); // pega os parâmetros da url
+    const diff = urlParams.get('diff'); // pega a dificuldade da url
+    defineDifficulty(diff); // define a dificuldade do jogo
+};
 
 const canvas = document.getElementById('spaceGame'); // seleciona o canvas no html
 const context = canvas.getContext('2d'); // define o contexto do canvas como 2d
@@ -36,26 +36,28 @@ canvas.height = window.innerHeight;
 
 const spaceship = new Spaceship(canvas.width / 2, canvas.height - 50, 50, 50, 10);  // cria a nave
 
-let asteroids = []; // fila de asteroides
+let asteroidsQueue = []; // fila de asteroides
+let maxAsteroids; // maximo de asteroides na tela
 let asteroidGenSpeed; // velocidade de geração de asteroides
 let score = 0; // pontuação do jogo de acordo com a quantidade de asteroides desviados
 
-function defineDifficulty(diff) 
-{
+function defineDifficulty(diff) {
     if (diff === 'easy') {
-        asteroidGenSpeed = 0.15; // velocidade inicial fácil
-    } else if (diff === 'medium') {
-        asteroidGenSpeed = 0.25; // velocidade inicial média
+        asteroidGenSpeed = 0.05; // velocidade inicial fácil reduzida
+        maxAsteroids = 50; // quantidade máxima de asteroides na tela
+    } else if (diff === 'normal') {
+        asteroidGenSpeed = 0.1; // velocidade inicial média reduzida
+        maxAsteroids = 60; // quantidade máxima de asteroides na tela
     } else if (diff === 'hard') {
-        asteroidGenSpeed = 0.35; // velocidade inicial difícil
+        asteroidGenSpeed = 0.15; // velocidade inicial difícil reduzida
+        maxAsteroids = 80; // quantidade máxima de asteroides na tela
     }
 
     updateGame(diff); // inicia o jogo
 }
 
-function drawAsteroids() 
-{ 
-    for (let asteroid of asteroids) {
+function drawAsteroids() {
+    for (let asteroid of asteroidsQueue) {
         asteroid.draw(context);
     }
 }
@@ -66,15 +68,14 @@ function writeScore() {
     context.fillText("Score: " + score, 10, 30);
 }
 
-function updateGame(diff) 
-{
+function updateGame(diff) {
     context.clearRect(0, 0, canvas.width, canvas.height);
 
     spaceship.draw(context);
     drawAsteroids();
     writeScore(); // escreve a pontuação na tela
 
-    for (let asteroid of asteroids) {
+    for (let asteroid of asteroidsQueue) {
         asteroid.update();
 
         if (checkCollision(spaceship, asteroid)) {
@@ -83,16 +84,16 @@ function updateGame(diff)
         }
     }
 
-    asteroids = asteroids.filter(asteroid => {
+    asteroidsQueue = asteroidsQueue.filter(asteroid => {
         if (asteroid.y <= canvas.height) {
             return true;
         } else {
-            score++; 
+            score++;
             return false;
         }
     });
 
-    if (Math.random() < asteroidGenSpeed) {
+    if (Math.random() < asteroidGenSpeed && asteroidsQueue.length < maxAsteroids) {
         let size = Math.floor(Math.random() * 50) + 10; // gera um tamanho aleatório entre 10 e 60
         let speed = 7; // velocidade padrão
 
@@ -104,40 +105,48 @@ function updateGame(diff)
         }
 
         let asteroid = new Asteroid(Math.random() * (canvas.width - size), -size, size, size, speed);
-        asteroids.push(asteroid); 
+
+        asteroidsQueue.push(asteroid);
     }
 
     asteroidGenSpeed += 0.001; // aumenta a velocidade dos asteroides ao longo do tempo
 
-    requestAnimationFrame(updateGame);
+    asteroidsQueue = asteroidsQueue.filter(asteroid => asteroid.y <= canvas.height);
+
+    requestAnimationFrame(() => updateGame(diff));
 }
 
 // verifica a tecla pressionada
-window.addEventListener('keydown', (pressed) => { 
-    if (pressed.key === 'ArrowLeft' || pressed.key === 'a' || pressed.key === 'A') { // movimenta a nave para a esquerda 
-        spaceship.moveLeft(); 
+window.addEventListener('keydown', (pressed) => {
+    if (pressed.key === 'ArrowLeft' || pressed.key === 'a' || pressed.key === 'A') { // movimenta a nave para a esquerda
+        spaceship.moveLeft();
     } else if (pressed.key === 'ArrowRight' || pressed.key === 'd' || pressed.key === 'D') { // movimenta a nave para a direita
-        spaceship.moveRight(canvas.width); 
+        spaceship.moveRight(canvas.width);
     }
 });
 
+// verifica se houve colisão entre a nave e um asteroide
 function checkCollision(spaceship, asteroid) { //boolean
-    return ( // verifica se houve colisão entre nave e asteroide
-        spaceship.x < asteroid.x + asteroid.width &&
-        spaceship.x + spaceship.width > asteroid.x &&
-        spaceship.y < asteroid.y + asteroid.height &&
-        spaceship.y + spaceship.height > asteroid.y
-    );
+    const spaceshipPadding = 10; // padding da nave
+
+    // calcula o raio da nave
+    const spaceshipRadius = (spaceship.width - 2 * spaceshipPadding) / 2; // raio original da nave
+    const adjustedSpaceshipRadius = spaceshipRadius * 0.8; // ajusta o raio da nave para ser menor no centro
+
+    const dx = (spaceship.x + spaceshipPadding) + spaceshipRadius - (asteroid.x + asteroid.width / 2);
+    const dy = (spaceship.y + spaceshipPadding) + spaceshipRadius - (asteroid.y + asteroid.height / 2);
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    return distance < (adjustedSpaceshipRadius + asteroid.width / 2);
 }
 
-function resetGame() 
-{
+function resetGame() {
     /* ----- recentraliza a nave ----- */
     spaceship.x = canvas.width / 2;
     spaceship.y = canvas.height - 50;
 
     /* ----- limpa o vetor de asteroides ----- */
-    asteroids = [];
+    asteroidsQueue = [];
 
     /* ----- reseta a pontuação ----- */
     score = 0;
