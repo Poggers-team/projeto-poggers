@@ -112,8 +112,10 @@ function updateGame(diff) {
             // verifica colisão da nave com os asteroides
             if (checkCollision(spaceship, asteroid)) {
                 // game over
-                alert('Game Over! Sua pontuação: ' + score);
-                resetGame();
+                alert('Game Over! Pressione OK para ver sua pontuação.');
+                // tela de game over
+                window.location.href = 'gameOver.html?score=' + score;
+                resetGame(); // reseta o jogo
             }
         }
 
