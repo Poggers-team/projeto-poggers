@@ -1,5 +1,4 @@
 /* Implementar (NÃO APAGAR!!!)
-Implementar a função para o jogo ficar mais difícil conforme o score/tempo aumenta
 
 
 -- arrumar --
@@ -15,6 +14,7 @@ bug hitbox da nave
 Conforme a dificuldade aumentar a velocidade dos asteroides aumenta e gera asteroides maiores
 bug hitbox dos asteroides
 Implementar a fila nova
+Implementar a função para o jogo ficar mais difícil conforme o score/tempo aumenta
 
 Se voces acharem alguma coisa pra arrumar (tirando a hitbox zoada) coloca ai em cima :)
 */
@@ -144,8 +144,8 @@ function updateGame(diff) {
             asteroidsQueue.enqueue(asteroid);
         }
 
-        // aumenta a velocidade dos asteroides ao longo do tempo
-        asteroidGenSpeed += 0.001;
+        // aumenta a velocidade de geração dos asteroides ao longo do tempo
+        asteroidGenSpeed += 0.0005;
     }
 
     // verifica se asteroidsQueue é definido antes de usar o método filter novamente
