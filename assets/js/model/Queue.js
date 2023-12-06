@@ -1,53 +1,53 @@
 // classe da fila
 export class Queue {
     constructor(maxSize) {
-        this.items = [];
+        this.asteroids = [];
         this.maxSize = maxSize;
     }
 
-    // adiciona um item na fila
-    enqueue(item) {
-        if (this.items.length >= this.maxSize) {
-            throw new Error("Queue overflow");
+    // adiciona um asteroide na fila
+    enqueue(asteroid) {
+        if (this.asteroids.length >= this.maxSize) { // verifica se a fila está cheia
+            throw new Error("Queue overflow"); // lança uma exceção caso a fila esteja cheia
         } else {
-            this.items.push(item);
+            this.asteroids.push(asteroid); // adiciona o asteroide à fila
         }
     }
 
-    // remove um item da fila
+    // remove um asteroide da fila
     dequeue() {
-        if (this.isEmpty()) {
+        if (this.isEmpty()) { // verifica se a fila está vazia
             return null;
         } else {
-            return this.items.shift();
+            return this.asteroids.shift(); // remove o primeiro item da fila
         }
     }
 
-    // retorna o primeiro item da fila
+    // retorna o primeiro asteroide da fila
     isEmpty() {
-        return this.items.length === 0;
+        return this.asteroids.length === 0; // retorna true se a fila estiver vazia
     }
 
     // retorna o tamanho da fila
     size() {
-        return this.items.length;
+        return this.asteroids.length;
     }
 }
 
 // Adiciona o método [Symbol.iterator] ao protótipo de Queue para que seja possível percorrer a fila com um for...of
 Queue.prototype[Symbol.iterator] = function() {
     let index = 0;
-    const items = this.items;
+    const asteroids = this.asteroids;
 
     return {
         next: function() {
-            return index < items.length ?
-                {value: items[index++], done: false} :
+            return index < asteroids.length ?
+                {value: asteroids[index++], done: false} :
                 {done: true};
         }
     };
 }
 
 Queue.prototype.size = function() {
-    return this.items.length;
+    return this.asteroids.length;
 };

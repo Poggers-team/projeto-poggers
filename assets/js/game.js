@@ -103,7 +103,7 @@ function updateGame(diff) {
     // verifica se asteroidsQueue está definido antes de usar o método filter
     if (asteroidsQueue) {
         // filtra os asteroides que ainda estão na tela
-        asteroidsQueue.items = asteroidsQueue.items.filter((asteroid) => asteroid.y <= canvas.height);
+        asteroidsQueue.asteroids = asteroidsQueue.asteroids.filter((asteroid) => asteroid.y <= canvas.height);
 
         // atualiza os asteroides
         for (let asteroid of asteroidsQueue) {
@@ -151,7 +151,7 @@ function updateGame(diff) {
     // verifica se asteroidsQueue é definido antes de usar o método filter novamente
     if (asteroidsQueue) {
         // filtra os asteroides que ainda estão na tela
-        asteroidsQueue.items = asteroidsQueue.items.filter((asteroid) => asteroid.y <= canvas.height);
+        asteroidsQueue.asteroids = asteroidsQueue.asteroids.filter((asteroid) => asteroid.y <= canvas.height);
     }
 
     // chama a função updateGame() a cada frame
