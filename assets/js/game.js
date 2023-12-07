@@ -186,4 +186,6 @@ function resetGame() {
 
     /* ----- reseta a pontuação ----- */
     score = 0;
+    asteroidGenSpeed = 0;
+    maxAsteroids = 0;
 }
