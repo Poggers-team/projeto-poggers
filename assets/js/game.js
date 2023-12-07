@@ -112,7 +112,7 @@ function updateGame(diff) {
             // verifica colisão da nave com os asteroides
             if (checkCollision(spaceship, asteroid)) {
                 // game over
-                alert('Game Over! Pressione OK para ver sua pontuação.');
+                // alert('Game Over! Pressione OK para ver sua pontuação.');
                 // tela de game over
                 window.location.href = 'gameOver.html?score=' + score;
                 resetGame(); // reseta o jogo
@@ -120,9 +120,9 @@ function updateGame(diff) {
         }
 
         // verifica se asteroides passaram pela nave
-        for (let asteroid of asteroidsQueue) {
-            if (asteroid.y > canvas.height) {
-                // incrementa a pontuação
+        for (let i = 0; i < asteroidsQueue.size(); i++) {
+            if (asteroidsQueue.size() > 0 && asteroidsQueue.asteroids[0].y > canvas.height) { // verifica se o primeiro asteroide da fila passou da nave
+                asteroidsQueue.dequeue(); // remove o primeiro asteroide da fila
                 score++;
             }
         }
