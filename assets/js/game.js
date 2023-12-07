@@ -1,9 +1,6 @@
 /* Implementar (NÃO APAGAR!!!)
 
-
 -- arrumar --
-bug hitbox da nave
-bug hitbox dos asteroides
 
 -- feito --
 Implementar o game over
@@ -15,8 +12,10 @@ arrumar bug velocidade dos asteroides
 dificuldade do jogo
 Implementar a fila nova
 Implementar a função para o jogo ficar mais difícil conforme o score/tempo aumenta
+bug hitbox da nave
+bug hitbox dos asteroides
 
-Se voces acharem alguma coisa pra arrumar (tirando a hitbox zoada) coloca ai em cima :)
+Se voces acharem alguma coisa pra arrumar coloca ai em cima :)
 */
 
 // importa os objetos do jogo
@@ -31,11 +30,6 @@ window.onload = () => {
     const urlParams = new URLSearchParams(window.location.search); // pega os parâmetros da url
     const diff = urlParams.get('diff'); // pega a dificuldade da url
     defineDifficulty(diff); // define a dificuldade do jogo
-
-    backgroundImage.onload = () => {
-        // inicia o jogo após o carregamento da imagem de fundo
-        updateGame(diff);
-    };
 };
 
 const canvas = document.getElementById('spaceGame'); // seleciona o canvas no html
@@ -46,7 +40,7 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 // cria a nave
-const spaceship = new Spaceship(940, 800, 67, 138, 15, 'assets/img/nave.png');
+const spaceship = new Spaceship(940, 800, 67, 138, 25, 'assets/img/spaceship.png');
 
 let maxAsteroids; // maximo de asteroides na tela
 let asteroidGenSpeed; // velocidade de geração de asteroides
@@ -155,7 +149,7 @@ function updateGame(diff) {
             }
 
             // cria um novo asteroide
-            let asteroid = new Asteroid(Math.random() * (canvas.width - size), -size, size, size, speed, 'assets/img/asteroide.png');
+            let asteroid = new Asteroid(Math.random() * (canvas.width - size), -size, size, size, speed, 'assets/img/asteroid.png');
 
             // adiciona o asteroide à fila
             asteroidsQueue.enqueue(asteroid);
@@ -178,11 +172,13 @@ function checkCollision(spaceship, asteroid) { //boolean
     const spaceshipRadius = (spaceship.width - 2 * spaceshipPadding) / 2; // raio original da nave
     const adjustedSpaceshipRadius = spaceshipRadius * 0.8; // ajusta o raio da nave para ser menor no centro
 
-    const dx = (spaceship.x + spaceshipPadding) + spaceshipRadius - (asteroid.x + asteroid.width / 2);
-    const dy = (spaceship.y + spaceshipPadding) + spaceshipRadius - (asteroid.y + asteroid.height / 2);
-    const distance = Math.sqrt(dx * dx + dy * dy);
+    // calcula a distância entre a nave e o asteroide
+    const dx = (spaceship.x + spaceshipPadding) + spaceshipRadius - (asteroid.x + asteroid.width / 2); // distância entre a nave e o asteroide no eixo x
+    const dy = (spaceship.y + spaceshipPadding) + spaceshipRadius - (asteroid.y + asteroid.height / 2); // distância entre a nave e o asteroide no eixo y
 
-    return distance < (adjustedSpaceshipRadius + asteroid.width / 2);
+    const distance = Math.sqrt(dx * dx + dy * dy); // distância entre a nave e o asteroide
+
+    return distance < (adjustedSpaceshipRadius + asteroid.width / 2); // retorna true se a nave colidir com o asteroide
 }
 
 function resetGame() {
