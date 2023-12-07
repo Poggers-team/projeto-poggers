@@ -20,11 +20,6 @@ audio {
     display: none;
 }
 
-body {
-    margin: 0;
-    overflow: hidden;
-}
-
 video {
     position: fixed;
     top: 0;

@@ -46,7 +46,7 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 // cria a nave
-const spaceship = new Spaceship(940, 800, 67, 138, 5, 'assets/img/nave.png');
+const spaceship = new Spaceship(940, 800, 67, 138, 15, 'assets/img/nave.png');
 
 let maxAsteroids; // maximo de asteroides na tela
 let asteroidGenSpeed; // velocidade de geração de asteroides
@@ -56,13 +56,13 @@ function defineDifficulty(diff) {
     // definir a velocidade de geração de asteroides e a quantidade máxima de asteroides de acordo com a dificuldade
     if (diff === 'easy') {
         asteroidGenSpeed = 0.05; 
-        maxAsteroids = 50; 
+        maxAsteroids = 45; 
     } else if (diff === 'normal') {
         asteroidGenSpeed = 0.1; 
-        maxAsteroids = 60;
+        maxAsteroids = 55;
     } else if (diff === 'hard') {
         asteroidGenSpeed = 0.15;
-        maxAsteroids = 80;
+        maxAsteroids = 75;
     }
 
     asteroidsQueue = new Queue(maxAsteroids); // fila de asteroides
