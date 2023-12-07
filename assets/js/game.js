@@ -121,8 +121,6 @@ function updateGame(diff) {
 
     // verifica se asteroidsQueue está definido antes de usar o método filter
     if (asteroidsQueue) {
-        // filtra os asteroides que ainda estão na tela
-        asteroidsQueue.asteroids = asteroidsQueue.asteroids.filter((asteroid) => asteroid.y <= canvas.height);
 
         // atualiza os asteroides
         for (let asteroid of asteroidsQueue) {
