@@ -20,9 +20,9 @@ Se voces acharem alguma coisa pra arrumar (tirando a hitbox zoada) coloca ai em 
 */
 
 // importa os objetos do jogo
-import { Spaceship } from './model/Spaceship.js';
-import { Asteroid } from './model/Asteroid.js';
-import { Queue } from './model/Queue.js';
+import { Spaceship } from './class/Spaceship.js';
+import { Asteroid } from './class/Asteroid.js';
+import { Queue } from './class/Queue.js';
 
 let asteroidsQueue; // declara a fila de asteroides
 
@@ -31,6 +31,11 @@ window.onload = () => {
     const urlParams = new URLSearchParams(window.location.search); // pega os parâmetros da url
     const diff = urlParams.get('diff'); // pega a dificuldade da url
     defineDifficulty(diff); // define a dificuldade do jogo
+
+    backgroundImage.onload = () => {
+        // inicia o jogo após o carregamento da imagem de fundo
+        updateGame(diff);
+    };
 };
 
 const canvas = document.getElementById('spaceGame'); // seleciona o canvas no html
@@ -40,7 +45,8 @@ const context = canvas.getContext('2d'); // define o contexto do canvas como 2d
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-const spaceship = new Spaceship(canvas.width / 2, canvas.height - 50, 50, 50, 10);  // cria a nave
+// cria a nave
+const spaceship = new Spaceship(940, 800, 67, 138, 5, 'assets/img/nave.png');
 
 let maxAsteroids; // maximo de asteroides na tela
 let asteroidGenSpeed; // velocidade de geração de asteroides
@@ -64,13 +70,14 @@ function defineDifficulty(diff) {
     updateGame(diff); // inicia o jogo
 }
 
+// "desenha" os asteroides na tela
 function drawAsteroids() {
     for (let asteroid of asteroidsQueue) { // percorre a fila
         asteroid.draw(context);
     }
 }
 
-
+// escreve a pontuação na tela
 function writeScore() {
     context.font = "20px Arial";
     context.fillStyle = "white";
@@ -86,14 +93,26 @@ window.addEventListener('keydown', (pressed) => {
     }
 });
 
+// carrega a imagem de fundo
+const backgroundImage = new Image();
+backgroundImage.src = 'assets/img/background.jpg';
+
+// "desenha" o background
+function drawBackground() {
+    context.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+}
+
 // atualiza o jogo
 function updateGame(diff) {
     // limpa o canvas
     context.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // desenha o background 
+    drawBackground();
 
     // desenha a nave
     spaceship.draw(context);
-
+    
     // desenha os asteroides
     drawAsteroids();
 
@@ -112,8 +131,6 @@ function updateGame(diff) {
             // verifica colisão da nave com os asteroides
             if (checkCollision(spaceship, asteroid)) {
                 // game over
-                // alert('Game Over! Pressione OK para ver sua pontuação.');
-                // tela de game over
                 window.location.href = 'gameOver.html?score=' + score;
                 resetGame(); // reseta o jogo
             }
@@ -140,7 +157,7 @@ function updateGame(diff) {
             }
 
             // cria um novo asteroide
-            let asteroid = new Asteroid(Math.random() * (canvas.width - size), -size, size, size, speed);
+            let asteroid = new Asteroid(Math.random() * (canvas.width - size), -size, size, size, speed, 'assets/img/asteroide.png');
 
             // adiciona o asteroide à fila
             asteroidsQueue.enqueue(asteroid);
