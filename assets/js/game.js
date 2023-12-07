@@ -167,12 +167,6 @@ function updateGame(diff) {
         asteroidGenSpeed += 0.0005;
     }
 
-    // verifica se asteroidsQueue é definido antes de usar o método filter novamente
-    if (asteroidsQueue) {
-        // filtra os asteroides que ainda estão na tela
-        asteroidsQueue.asteroids = asteroidsQueue.asteroids.filter((asteroid) => asteroid.y <= canvas.height);
-    }
-
     // chama a função updateGame() a cada frame
     requestAnimationFrame(() => updateGame(diff));
 }
