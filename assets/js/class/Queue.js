@@ -7,10 +7,17 @@ export class Queue {
 
     // adiciona um asteroide na fila
     enqueue(asteroid) {
-        if (this.asteroids.length >= this.maxSize) { // verifica se a fila está cheia
-            throw new Error("Queue overflow"); // lança uma exceção caso a fila esteja cheia
-        } else {
-            this.asteroids.push(asteroid); // adiciona o asteroide à fila
+        try
+        {
+            if (this.asteroids.length >= this.maxSize) { // verifica se a fila está cheia
+                throw new Error("Queue overflow"); // lança uma exceção caso a fila esteja cheia
+            } else {
+                this.asteroids.push(asteroid); // adiciona o asteroide à fila
+            }
+        }
+        catch (error)
+        {
+            console.log(error);
         }
     }
 
@@ -34,7 +41,7 @@ export class Queue {
     }
 }
 
-// Adiciona o método [Symbol.iterator] ao protótipo de Queue para que seja possível percorrer a fila com um for...of
+// método para percorrer a fila com um for...of
 Queue.prototype[Symbol.iterator] = function() {
     let index = 0;
     const asteroids = this.asteroids;

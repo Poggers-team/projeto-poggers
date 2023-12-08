@@ -23,7 +23,7 @@ export class Spaceship {
     }
 
     draw(context) {
-        // Desenhar a imagem em vez de um retângulo
+        // desenhar a imagem
         context.drawImage(this.image, this.x, this.y, this.width, this.height);
     }
 }

@@ -39,8 +39,16 @@ const context = canvas.getContext('2d'); // define o contexto do canvas como 2d
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
+// constantes
+const spaceshipStartPositionX = canvas.width / 2; // posição inicial da nave no eixo x
+const spaceshipStartPositionY = canvas.height - 135; // posição inicial da nave no eixo y
+const spaceshipWidth = 67; // largura da nave
+const spaceshipHeight = 138; // altura da nave
+const spaceshipSpeed = 25; // velocidade da nave
+
 // cria a nave
-const spaceship = new Spaceship(940, 800, 67, 138, 25, 'assets/img/spaceship.png');
+const spaceship = new Spaceship(spaceshipStartPositionX, spaceshipStartPositionY, spaceshipWidth, spaceshipHeight, spaceshipSpeed, 'assets/img/spaceship.png');
+
 
 let maxAsteroids; // maximo de asteroides na tela
 let asteroidGenSpeed; // velocidade de geração de asteroides
@@ -113,7 +121,7 @@ function updateGame(diff) {
     // escreve a pontuação na tela
     writeScore();
 
-    // verifica se asteroidsQueue está definido antes de usar o método filter
+    // verifica se asteroidsQueue está definido
     if (asteroidsQueue) {
 
         // atualiza os asteroides
@@ -181,10 +189,11 @@ function checkCollision(spaceship, asteroid) { //boolean
     return distance < (adjustedSpaceshipRadius + asteroid.width / 2); // retorna true se a nave colidir com o asteroide
 }
 
+// reseta o jogo
 function resetGame() {
     /* ----- recentraliza a nave ----- */
     spaceship.x = canvas.width / 2;
-    spaceship.y = canvas.height - 50;
+    spaceship.y = canvas.height - 135;
 
     /* ----- limpa a fila de asteroides ----- */
     asteroidsQueue = new Queue(maxAsteroids);

@@ -15,10 +15,6 @@ export class Asteroid {
         context.drawImage(this.image, this.x, this.y, this.width, this.height);
     }
 
-    increaseSpeed() {
-        this.speed += 0.002; // aumenta a velocidade do asteroide
-    }
-
     update() {
         this.y += this.speed;
     }
